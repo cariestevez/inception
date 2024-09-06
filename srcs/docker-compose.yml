@@ -20,6 +20,8 @@ services:
   
   wordpress:
     image: wordpress
+    depends_on:
+      - mariadb
     deploy:
       replicas: 1
     expose:
@@ -30,12 +32,12 @@ services:
       - .env
     networks:
       - netception
-    depends_on:
-      - mariadb
     restart: unless-stopped
 
   ngnix:
     image: nginx
+    depends_on:
+      - wordpress
     deploy:
       replicas: 1
     secrets:
@@ -46,12 +48,11 @@ services:
         target: /etc/nginx/nginx.conf
     ports:
       - "443:443"
+      #- "80:80"   # HTTP traffic
     env_file:
       - .env
     networks:
       - netception
-    depends_on:
-      - wordpress
     restart: unless-stopped
 
 secrets:
