@@ -1,0 +1,5 @@
+#specifies all the files/folders that shouldn't be copied when running COPY in the Dockerfile
+#for example logs or sensitive data that shouldn't go into the img
+
+
+
