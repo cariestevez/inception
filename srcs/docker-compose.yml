@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  mariadb:
+    image: mariadb
+    deploy:
+      replicas: 1
+    expose:
+      - "3306"
+    secrets:
+      - db_root_password
+      - db_password
+    volumes:
+      - /home/cestevez/data/db_data:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - netception
+    restart: unless-stopped
+  
+  wordpress:
+    image: wordpress
+    deploy:
+      replicas: 1
+    expose:
+      - "9000" # Expose port 9000 for PHP-FPM, only for internal use
+    volumes:
+      - /home/cestevez/data/wp_data:/var/www/html
+    env_file:
+      - .env
+    networks:
+      - netception
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
+  ngnix:
+    image: nginx
+    deploy:
+      replicas: 1
+    secrets:
+      - nginx_cert
+      - nginx_key
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/nginx.conf
+    ports:
+      - "443:443"
+    env_file:
+      - .env
+    networks:
+      - netception
+    depends_on:
+      - wordpress
+    restart: unless-stopped
+
+secrets:
+  db_root_password:
+    external: true
+  db_password:
+    external: true
+  nginx_cert:
+    external: true
+  nginx_key:
+    external: true
+
+configs:
+  nginx_config:
+    file: ./nginx.conf
+
+networks:
+  netception:  # Custom network to connect all services
+    driver: overlay # multi host network - default docker swarm mode (for docker secrets)
