@@ -6,7 +6,9 @@ RUN apt-get update -y  && \
     rm -rf /var/lib/apt/lists/*
 
 #COPY ./conf/nginx.conf /etc/nginx/nginx.conf (done in compose file with swarm)
-COPY ./*.html /usr/share/nginx/html/
+COPY ./*.html /var/www/html
+RUN chmod 755 /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 443
 

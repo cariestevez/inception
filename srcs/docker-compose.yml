@@ -34,7 +34,7 @@ services:
       - netception
     restart: unless-stopped
 
-  ngnix:
+  nginx:
     image: nginx
     depends_on:
       - wordpress
@@ -67,8 +67,8 @@ secrets:
 
 configs:
   nginx_config:
-    file: ./nginx.conf
+    file: /media/sf_Host_documents/inception/srcs/requirements/nginx/conf/nginx.conf
 
 networks:
   netception:  # Custom network to connect all services
-    driver: overlay # multi host network - default docker swarm mode (for docker secrets)
+    driver: overlay # multi host network - default docker swarm mode
