@@ -7,25 +7,49 @@ all: $(NAME)
 
 $(NAME): up
 
+image_exists = $(shell docker images -q $(1) 2> /dev/null)
+
 build:
-	@docker build -t mariadb $(SRCS)/mariadb
-	@docker build -t wordpress $(SRCS)/wordpress
-	@docker build -t nginx $(SRCS)/nginx
+	@if [ -z "$(call image_exists,mariadb)" ]; then \
+		echo "Building mariadb image..."; \
+		docker build -t mariadb $(SRCS)/mariadb; \
+	else \
+		echo "mariadb image already exists, skipping build."; \
+	fi
+	@if [ -z "$(call image_exists,wordpress)" ]; then \
+		echo "Building wordpress image..."; \
+		docker build -t wordpress $(SRCS)/wordpress; \
+	else \
+		echo "wordpress image already exists, skipping build."; \
+	fi
+	@if [ -z "$(call image_exists,nginx)" ]; then \
+		echo "Building nginx image..."; \
+		docker build -t nginx $(SRCS)/nginx; \
+	else \
+		echo "nginx image already exists, skipping build."; \
+	fi
 
 up:	build
-	#@sudo hostsed add 127.0.0.1 $(HOST_URL) > $(HIDE) && echo " $(HOST_ADD)"
-	#@docker compose -p $(NAME) -f $(COMPOSE) up --build || (echo " $(FAIL)" && exit 1)
 	@docker stack deploy -c $(COMPOSE) inception_stack
 	@echo "Containers up"
 
 down:
-	# Scale services down to 0 replicas instead of removing the stack
-	@docker service scale inception_stack_nginx=0 inception_stack_wordpress=0 inception_stack_mariadb=0
-	@echo "Containers down"
+	@if docker stack ps inception_stack > /dev/null 2>&1; then \
+		echo "Scaling services down..."; \
+		docker service scale inception_stack_nginx=0 inception_stack_wordpress=0 inception_stack_mariadb=0; \
+		echo "Containers down"; \
+	else \
+		echo "Stack not found, skipping service scaling"; \
+	fi
 
 restart:
-	@docker service scale inception_stack_nginx=1 inception_stack_wordpress=1 inception_stack_mariadb=1
-	@echo "Containers restarted"
+	@if docker stack ps inception_stack > /dev/null 2>&1; then \
+		echo "Restarting services..."; \
+		docker service scale inception_stack_nginx=1 inception_stack_wordpress=1 inception_stack_mariadb=1; \
+		echo "Containers restarted"; \
+	else \
+		echo "Stack not found, skipping service restart"; \
+	fi
 
 backup:
 	@if [ -d ~/data ]; then \
@@ -35,35 +59,36 @@ backup:
 	fi
 
 clean: down
-	# Remove the stack and any associated services
-	@docker stack rm inception_stack
-	@echo "Removed inception stack"
-
+	@if docker stack ls | grep -q inception_stack; then \
+		echo "Removing inception stack..."; \
+		docker stack rm inception_stack; \
+		echo "Removed inception stack"; \
+	else \
+		echo "Stack not found, skipping stack removal"; \
+	fi
 fclean: backup clean
-	@sudo rm -rf ~/data  # Remove persistent data (volumes)
+	sudo rm -rf ~/data/db_data/{*,.*} ~/data/wp_data/{*,.*} 2>/dev/null
 
-	@if [ -n "$$(docker image ls $(NAME)-nginx -q)" ]; then \
-		docker image rm -f $(NAME)-nginx && \
+	@if [ -n "$$(docker image ls nginx -q)" ]; then \
+		docker image rm -f $$(docker image ls nginx -q) && \
 		echo "Removed nginx image"; \
 	fi
 
-	@if [ -n "$$(docker image ls $(NAME)-wordpress -q)" ]; then \
-		docker image rm -f $(NAME)-wordpress && \
+	@if [ -n "$$(docker image ls wordpress -q)" ]; then \
+		docker image rm -f $$(docker image ls wordpress -q) && \
 		echo "Removed wordpress image"; \
 	fi
 
-	@if [ -n "$$(docker image ls $(NAME)-mariadb -q)" ]; then \
-		docker image rm -f $(NAME)-mariadb && \
+	@if [ -n "$$(docker image ls mariadb -q)" ]; then \
+		docker image rm -f $$(docker image ls mariadb -q) && \
 		echo "Removed mariadb image"; \
 	fi
-	
-	# Remove all volumes associated with the project (if necessary)
+
 	@if [ -n "$$(docker volume ls --filter "name=$(NAME)" -q)" ]; then \
 		docker volume rm $$(docker volume ls --filter "name=$(NAME)" -q) && \
 		echo "Removed volumes"; \
 	fi
 
-	# Optionally remove dangling containers and images
 	@if [ -n "$$(docker ps -a --filter "status=exited" -q)" ]; then \
 		docker rm $$(docker ps -a --filter "status=exited" -q) && \
 		echo "Removed exited containers"; \
@@ -73,8 +98,6 @@ fclean: backup clean
 		docker rmi $$(docker images -f "dangling=true" -q) && \
 		echo "Removed dangling images"; \
 	fi
-
-	#@sudo hostsed rm 127.0.0.1 $(HOST_URL) > $(HIDE) && echo " $(HOST_RM)"
 
 status:
 	@clear

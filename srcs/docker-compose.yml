@@ -5,15 +5,18 @@ services:
     image: mariadb
     deploy:
       replicas: 1
-    expose:
-      - "3306"
+    volumes:
+      - /home/cestevez/data/db_data:/var/lib/mysql
     secrets:
       - db_root_password
       - db_password
-    volumes:
-      - /home/cestevez/data/db_data:/var/lib/mysql
     env_file:
       - .env
+    environment:
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+    expose:
+      - "3306"
     networks:
       - netception
     restart: unless-stopped
@@ -24,12 +27,18 @@ services:
       - mariadb
     deploy:
       replicas: 1
-    expose:
-      - "9000" # Expose port 9000 for PHP-FPM, only for internal use
     volumes:
       - /home/cestevez/data/wp_data:/var/www/html
+    secrets:
+      - db_password
+      #- wp_secret_key
     env_file:
       - .env
+    environment:
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      #WP_SECRETKEY_FILE: /run/secrets/wp_secret_key
+    expose:
+      - "9000" # Expose port 9000 for PHP-FPM, only for internal use
     networks:
       - netception
     restart: unless-stopped
@@ -43,14 +52,14 @@ services:
     secrets:
       - nginx_cert
       - nginx_key
+    env_file:
+      - .env
     configs:
       - source: nginx_config
         target: /etc/nginx/nginx.conf
     ports:
       - "443:443"
       #- "80:80"   # HTTP traffic
-    env_file:
-      - .env
     networks:
       - netception
     restart: unless-stopped
