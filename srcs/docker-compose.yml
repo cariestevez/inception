@@ -1,83 +1,43 @@
-version: "3.8"
-
 services:
   mariadb:
-    image: mariadb
-    deploy:
-      replicas: 1
+    container_name: mariadb
     volumes:
       - /home/cestevez/data/db_data:/var/lib/mysql
-    secrets:
-      - db_root_password
-      - db_password
+    build:
+      context: ./requirements/mariadb
     env_file:
       - .env
-    environment:
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
-    expose:
-      - "3306"
+    #environment:
+      #- DB_NAME=${DB_NAME}
+      #- DB_USER=${DB_USER}
+      #- DB_PASSWORD=${DB_PASSWORD}
+      #- DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    restart: unless-stopped
     networks:
       - netception
-    restart: unless-stopped
-  
+
   wordpress:
-    image: wordpress
-    depends_on:
-      - mariadb
-    deploy:
-      replicas: 1
+    container_name: wordpress
     volumes:
       - /home/cestevez/data/wp_data:/var/www/html
-    secrets:
-      - db_password
-      #- wp_secret_key
+    build:
+      context: ./requirements/wordpress
     env_file:
       - .env
-    environment:
-      DB_PASSWORD_FILE: /run/secrets/db_password
-      #WP_SECRETKEY_FILE: /run/secrets/wp_secret_key
-    expose:
-      - "9000" # Expose port 9000 for PHP-FPM, only for internal use
+    #environment:
+      #- DB_HOST=mariadb:3306
+      #- DB_NAME=${DB_NAME}
+      #- DB_USER=${DB_USER}
+      #- DB_PASSWORD=${DB_PASSWORD}
+    restart: unless-stopped
     networks:
       - netception
-    restart: unless-stopped
-
-  nginx:
-    image: nginx
     depends_on:
-      - wordpress
-    deploy:
-      replicas: 1
-    secrets:
-      - nginx_cert
-      - nginx_key
-    env_file:
-      - .env
-    configs:
-      - source: nginx_config
-        target: /etc/nginx/nginx.conf
-    ports:
-      - "443:443"
-      #- "80:80"   # HTTP traffic
-    networks:
-      - netception
-    restart: unless-stopped
-
-secrets:
-  db_root_password:
-    external: true
-  db_password:
-    external: true
-  nginx_cert:
-    external: true
-  nginx_key:
-    external: true
-
-configs:
-  nginx_config:
-    file: /media/sf_Host_documents/inception/srcs/requirements/nginx/conf/nginx.conf
-
+      - mariadb
+    
 networks:
-  netception:  # Custom network to connect all services
-    driver: overlay # multi host network - default docker swarm mode
+  netception:
+    driver: bridge
+
+
+

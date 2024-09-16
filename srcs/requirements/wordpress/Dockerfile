@@ -11,32 +11,32 @@ RUN	apt-get update -y  && \
     	tar \
     	curl \
     	mariadb-client && \
-    	rm -rf /var/lib/apt/lists/*
+    	apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
+    
 WORKDIR	/var/www/html
 
 RUN	wget https://wordpress.org/wordpress-6.6.1.tar.gz && \
 	tar -xzf wordpress-6.6.1.tar.gz && \
 	rm wordpress-6.6.1.tar.gz
-    	#mv wordpress /var/www/html
 
 # Set proper file permissions to write on mounted volume
-RUN	chown -R www-data:www-data /var/www/html
-#RUN	chown -R root:root /var/www/wordpress
-#    find /var/www/html/ -type d -exec chmod 755 {} \; && \
-#    find /var/www/html/ -type f -exec chmod 644 {} \;
-
-# Create a custom PHP-FPM configuration (optional)
-#COPY php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
-
+RUN	chown -R www-data:www-data /var/www/html \
+	&& chmod -R 755 /var/www/html
 
 COPY	/conf/www.conf /etc/php-fpm.d/www.conf
-COPY	/conf/wp-config.php /var/www/html/wp-config.php
 
-COPY	tools/setup.sh /bin/
-RUN	chmod +x /bin/setup.sh
+COPY	tools/setup.sh /usr/local/bin/setup.sh
+RUN	chmod +x /usr/local/bin/setup.sh
+
+# Make PHP-FPM listen on all IPs
+RUN sed -i 's/listen = 127.0.0.1:9000/listen = 9000/' /usr/local/etc/php-fpm.d/zz-docker.conf
 
 EXPOSE	9000
 
-CMD	["setup.sh", "php-fpm", "--nodaemonize"]
-#CMD ["php-fpm7.4", "-F"]: Runs PHP-FPM in the foreground (the -F flag) as the main process in the container.
+ENTRYPOINT ["/usr/local/bin/setup.sh"]
+
+CMD ["php-fpm"]

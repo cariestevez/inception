@@ -1,6 +1,7 @@
-[mysqld]
+[server]
+init_file = /etc/mysql/init.sql
 
-port = 3306
-datadir = /var/lib/mysql
-user=mysql
-bind-address = 0.0.0.0 #allows external connections
+[mysqld]
+user	= root
+port	= 3306
+datadir	= /var/lib/mysql
