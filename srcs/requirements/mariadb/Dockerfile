@@ -2,15 +2,21 @@ FROM debian:12.6
 
 RUN apt-get update -y  && \
     apt-get upgrade -y && \
-    apt-get install --no-install-recommends --no-install-suggests -y mariadb-server && \
+    apt-get install --no-install-recommends --no-install-suggests -y mariadb-server gettext && \
     rm -rf /var/lib/apt/lists/*
 
 COPY	conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
+RUN	chmod +x /etc/mysql/mariadb.conf.d/50-server.cnf
 
-COPY	tools/setup.sh /bin/
-RUN	chmod +x /bin/setup.sh
+COPY	tools/template_init.sql /etc/mysql/template_init.sql
+RUN	chmod +x /etc/mysql/template_init.sql
 
-EXPOSE 3306
+COPY 	tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN 	chmod +x /usr/local/bin/entrypoint.sh
 
-CMD	["setup.sh", "mysqld_safe"]
+EXPOSE 	3306
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+CMD ["mysqld_safe"]
 
