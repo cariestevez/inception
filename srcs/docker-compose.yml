@@ -1,0 +1,11 @@
+services: # List of services
+  mariadb: # Service 1
+      	container_name: mariadb
+	#image: image1 # Image to use
+	ports: # Ports to expose
+	  - "80:80"
+	  - "443:443"
+	volumes: # Volumes to mount
+	  - volume1
+	networks: # Networks to connect to
+	  - network1
