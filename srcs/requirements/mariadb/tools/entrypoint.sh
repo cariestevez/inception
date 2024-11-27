@@ -1,31 +1,38 @@
 #!/bin/bash
+
+# Initialize the database if it doesn't exist
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "Initializing database..."
     mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
 fi
 
-# Starts MariaDB in the background
-#mysqld_safe &
-service mariadb start
+# Start MariaDB in the background
+# --skip-networking disables TCP connections and restricts communication to the Unix socket (communication between processes in same container only)
+echo "Starting MariaDB service in the background for setup..."
+mysqld_safe --skip-networking &
+sleep 5
 
-#until mysql -u root -e "SELECT 1" > /dev/null 2>&1; do
-#    echo "Waiting for MariaDB to be ready..."
-#    sleep 2
-#done
+# Wait for MariaDB to be ready
+echo "Waiting for MariaDB to be ready..."
+until mysqladmin ping --silent; do
+    echo "MariaDB is not ready yet. Waiting..."
+    sleep 2
+done
 
-echo "Starting MariaDB shell for setup..."
-mysql -u root -p <<EOF
+# Run SQL commands
+echo "Running initial SQL setup..."
+mysql -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';
 CREATE DATABASE IF NOT EXISTS wordpress;
 CREATE USER IF NOT EXISTS 'wordpress_user'@'%' IDENTIFIED BY 'abcdef';
 GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress_user'@'%';
 FLUSH PRIVILEGES;
 EOF
-#CREATE USER 'wordpress_user'@'%' IDENTIFIED WITH mysql_native_password BY 'abcdef'; #plugin for old authentication method compatible with wordpress
 
-service mariadb stop
+# Shut down the background MariaDB instance
+echo "Shutting down temporary MariaDB instance..."
+mysqladmin -u root -p123456 shutdown
 
-echo "Starting MariaDB service..."
-
+# Start MariaDB in the foreground
+echo "Restarting MariaDB in the foreground..."
 exec mysqld_safe
-
