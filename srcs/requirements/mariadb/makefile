@@ -4,7 +4,7 @@ build:
 	docker build -t maria .
 
 run:
-	docker run -d --name mariadb -p 3306:3306 maria
+	docker run -d --name mariadb maria
 
 exec:
 	docker exec -it mariadb bash
