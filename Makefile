@@ -4,6 +4,12 @@ DATA	= /home/cestevez/data
 
 all:	up
 
+install: 
+	@sudo apt-get update
+	@sudo apt-get install -y docker.io docker-compose
+	@sudo usermod -aG docker $(USER)
+	@newgrp docker
+
 up:	
 	@docker compose -f $(COMPOSE) up -d
 

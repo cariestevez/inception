@@ -15,3 +15,7 @@
 https://www.php.net/manual/en/install.fpm.php
 https://www.php.net/manual/en/install.unix.debian.php
 https://www.php.net/manual/en/book.mysqli.php
+
+
+TO DO:
+Add 2 users to wordpress database (admin & normal user)
