@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Initialize the database if it doesn't exist
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-    echo "Initializing database..."
-    mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
-fi
+# # Initialize the database if it doesn't exist
+# if [ ! -d "/var/lib/mysql/mysql" ]; then
+#     echo "Initializing database..."
+#     mysqld --user=mysql --datadir=/var/lib/mysql --initialize
+#     #mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
+# fi
 
 # Start MariaDB in the background
 # --skip-networking disables TCP connections and restricts communication to the Unix socket (communication between processes in same container only)
@@ -31,7 +32,21 @@ EOF
 
 # Shut down the background MariaDB server instance
 echo "Shutting down temporary MariaDB instance..."
-mysqladmin -u root -p123456 shutdown
+mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown
+
+# # Run mysql client to communicate with the server & set up the database
+# echo "Running mysql client for setting up the database..."
+# mysql -u root <<EOF
+# ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';
+# CREATE DATABASE IF NOT EXISTS wordpress;
+# CREATE USER IF NOT EXISTS 'wordpress_user'@'%' IDENTIFIED BY 'abcdef';
+# GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress_user'@'%';
+# FLUSH PRIVILEGES;
+# EOF
+
+# # Shut down the background MariaDB server instance
+# echo "Shutting down temporary MariaDB instance..."
+# mysqladmin -u root -p123456 shutdown
 
 # Start MariaDB in the foreground
 echo "Restarting MariaDB in the foreground..."
