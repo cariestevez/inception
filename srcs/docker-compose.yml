@@ -10,8 +10,9 @@ services:
       # secrets:
       #   - db_root_password
     volumes:
+      - data_base:/var/lib/mysql
       #- /home/cestevez/data/wordpress_db:/var/lib/mysql
-      - /Users/carinaestevezorth/Documents/42curriculum/data/wordpress_db:/var/lib/mysql
+      #- /Users/carinaestevezorth/Documents/42curriculum/data/wordpress_db:/var/lib/mysql
     networks:
       - netception
 
@@ -28,15 +29,25 @@ services:
       # secrets:
       #   - db_root_password
     volumes:
-      #- /home/cestevez/data/wordpress_files:/var/www/html
-      - /Users/carinaestevezorth/Documents/42curriculum/data/wordpress_data:/var/www/html
+      - wordpress_data:/var/www/html
+      # - /home/cestevez/data/wordpress_files:/var/www/html
+      # - /Users/carinaestevezorth/Documents/42curriculum/data/wordpress_data:/var/www/html
     networks:
       - netception
-  
-  # volumes:
-  #   /home/cestevez/data/wordpress_db:
-  #   external: true
-  #/Users/carinaestevezorth/Documents/42curriculum/data/wordpress_db:
+
+volumes:
+  data_base:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/cestevez/data/wordpress_db'
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/cestevez/data/wordpress_files'
 
 networks:
   netception:
