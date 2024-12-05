@@ -13,6 +13,14 @@ RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
     chown -R www-data:www-data /var/www/html && \
     mkdir -p var/run/php/ && cd var/run/php/ && touch php7.4-fpm.pid
 
+    # RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
+    # tar -xvzf wordpress.tar.gz && rm -rf wordpress.tar.gz \
+    # mkdir -p /var/www/html && chmod -R 755 /var/www/html \
+    # mv wordpress /var/www/html && \
+    # chmod -R 644 /var/www/html/wordpress/* && \
+    # chown -R www-data:www-data /var/www/html && \
+    # mkdir -p var/run/php/ && cd var/run/php/ && touch php7.4-fpm.pid
+
 COPY ../conf/wp-config.php /var/www/html/wordpress/
 COPY ../conf/www.conf /etc/php/7.4/fpm/pool.d/
 

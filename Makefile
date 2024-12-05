@@ -1,6 +1,6 @@
 COMPOSE	= ./srcs/docker-compose.yml
-DATA	= /home/cestevez/data
-#DATA	= /Users/carinaestevezorth/Documents/42curriculum/data
+#DATA	= /home/cestevez/data
+DATA	= /Users/carinaestevezorth/Documents/42curriculum/data
 
 all:	up
 
@@ -27,10 +27,10 @@ backup:
 	fi
 
 clean:	down prune
-	sudo rm -rf $(DATA)/wordpress_db/{*,.*} $(DATA)/wordpress_data/{*,.*} 2>/dev/null
+#sudo rm -rf $(DATA)/wordpress_db/{*,.*} $(DATA)/wordpress_data/{*,.*} 2>/dev/null
 	
 fclean: clean
-	sudo rm -rf ~/backup_data.tar.gz 2>/dev/null
+#sudo rm -rf ~/backup_data.tar.gz 2>/dev/null
 
 status:
 	@clear
