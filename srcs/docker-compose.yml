@@ -27,7 +27,7 @@ services:
       # secrets:
       #   - db_root_password
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress_files:/var/www/wordpress
     networks:
       - netception
   nginx:
@@ -35,39 +35,32 @@ services:
       - wordpress
     build: ./requirements/nginx
     container_name: nginx
-    # environment:
-    #   WORDPRESS_DB_HOST: mariadb:3306
-    #   WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
-    #   WORDPRESS_DB_USER: ${MYSQL_USER}
-    #   WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
-    # secrets:
-    #   - db_root_password
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress_files:/var/www/wordpress
     ports:
-      - "8080:80"
+      - "443:443"
     networks:
       - netception
 
-# volumes:
-#   data_base:
-#     driver: local
-#     driver_opts:
-#       type: 'none'
-#       o: 'bind'
-#       device: '/Users/carinaestevezorth/Documents/42curriculum/data/wordpress_db'
-#       # device: '/home/cestevez/data/wordpress_db'
-#   wordpress_data:
-#     driver: local
-#     driver_opts:
-#       type: 'none'
-#       o: 'bind'
-#       device: '/Users/carinaestevezorth/Documents/42curriculum/data/wordpress_data'
-#       # device: '/home/cestevez/data/wordpress_files'
-
 volumes:
   data_base:
-  wordpress_data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      #device: '/Users/carinaestevezorth/Documents/42curriculum/data/wordpress_db'
+      device: '/home/cestevez/data/wordpress_db'
+  wordpress_files:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      #device: '/Users/carinaestevezorth/Documents/42curriculum/data/wordpress_data'
+      device: '/home/cestevez/data/wordpress_files'
+
+# volumes:
+#   data_base:
+#   wordpress_data:
 
 networks:
   netception:

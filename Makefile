@@ -1,6 +1,6 @@
 COMPOSE	= ./srcs/docker-compose.yml
-#DATA	= /home/cestevez/data
-DATA	= /Users/carinaestevezorth/Documents/42curriculum/data
+DATA	= /home/cestevez/data
+#DATA	= /Users/carinaestevezorth/Documents/42curriculum/data
 
 all:	up
 
@@ -27,9 +27,9 @@ backup:
 	fi
 
 clean:	down prune
-#sudo rm -rf $(DATA)/wordpress_db/{*,.*} $(DATA)/wordpress_data/{*,.*} 2>/dev/null
 	
-fclean: clean
+fclean:	clean
+		sudo rm -rf $(DATA)/wordpress_db/* $(DATA)/wordpress_files/*
 #sudo rm -rf ~/backup_data.tar.gz 2>/dev/null
 
 status:
@@ -43,6 +43,6 @@ status:
 	@echo "\nNETWORKS\n"
 	@docker network ls
 	
-re:	clean up
+re:	fclean up
 
-.PHONY: all up down prune backup clean status re
+.PHONY: all up down prune backup clean fclean status re

@@ -17,20 +17,16 @@
  *
  * @package WordPress
  */
-
 // ** Database settings - You can get this info from your web host ** //
-/** The name of the database for WordPress */
-define('DB_NAME', '${WORDPRESS_DB_NAME}');
-define('DB_USER', '${WORDPRESS_DB_USER}');
-define('DB_PASSWORD', '${WORDPRESS_DB_PASSWORD}');
-define('DB_HOST', '${WORDPRESS_DB_HOST}');
-
+define( 'DB_NAME', getenv('WORDPRESS_DB_NAME') );
+define( 'DB_USER', getenv('WORDPRESS_DB_USER') );
+define( 'DB_PASSWORD', getenv('WORDPRESS_DB_PASSWORD') );
+define( 'DB_HOST', getenv('WORDPRESS_DB_HOST') );
 /** Database charset to use in creating database tables. */
-define( 'DB_CHARSET', 'utf8' );
-
+//define( 'DB_CHARSET', 'utf8' );
+define('DB_CHARSET', 'utf8mb4');
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
-
 /**#@+
  * Authentication unique keys and salts.
  *
@@ -50,9 +46,7 @@ define('AUTH_SALT',        'j*_yXn#kS,@q35n}5%2i`Rz#X4]jj<r`I302%+>jQs|d(6Ku`Yp2
 define('SECURE_AUTH_SALT', 'lfZ)9ncTrw0zsNRAkDH+b +&+n?gtD(v-Bs$Pz+^6`4;$^!q,/sJG[WW|c2Vy%=;');
 define('LOGGED_IN_SALT',   '9<W~4xAU|d0E*&BV89[vZDkC0o6,<>PU%cNN[BmQJ*-y;P`zT:uDtt-~T)u0PP8?');
 define('NONCE_SALT',       'o7rmMh1Hr];UqY+i~W2lp SQe-eILI|B-u^i){?$Yx~_x-9Fp0U7pdRQ!RM>-viC');
-
 /**#@-*/
-
 /**
  * WordPress database table prefix.
  *
@@ -66,7 +60,6 @@ define('NONCE_SALT',       'o7rmMh1Hr];UqY+i~W2lp SQe-eILI|B-u^i){?$Yx~_x-9Fp0U7
  * @link https://developer.wordpress.org/advanced-administration/wordpress/wp-config/#table-prefix
  */
 $table_prefix = 'wp_';
-
 /**
  * For developers: WordPress debugging mode.
  *
@@ -88,21 +81,15 @@ define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
 // Disable display of errors and warnings
 define( 'WP_DEBUG_DISPLAY', true );
-
 /* Add any custom values between this line and the "stop editing" line. */
-
 // define( 'WP_SITEURL', 'https://' . $_SERVER['HTTP_HOST'] . '/var/www/html/wordpress' );
 // // or
 // //define( 'WP_SITEURL', 'https://' . $_SERVER['SERVER_NAME'] . '/path/to/wordpress' );
 // define( 'WP_HOME', 'https://' . $_SERVER['HTTP_HOST'] . '/path/to/wordpress' );
-
-
 /* That's all, stop editing! Happy publishing. */
-
 /** Absolute path to the WordPress directory. */
 if ( ! defined( 'ABSPATH' ) ) {
         define( 'ABSPATH', __DIR__ . '/' );
 }
-
 /** Sets up WordPress vars and included files. */
 require_once ABSPATH . 'wp-settings.php';
