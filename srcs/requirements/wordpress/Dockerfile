@@ -1,9 +1,8 @@
 FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
-    php php-fpm curl \
-    php-mysql \
-    default-mysql-client \
+    php php-fpm php-mysql mysqli pdo_mysql default-mysql-client \
+    curl tar \
     && apt-get clean
 
 RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
