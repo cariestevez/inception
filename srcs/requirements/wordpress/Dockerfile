@@ -1,8 +1,11 @@
 FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
-    php php-fpm php-mysql mysqli pdo_mysql default-mysql-client \
-    curl tar \
+    php php-fpm php-mysql default-mysql-client \
+    curl tar git \
+    && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp \
     && apt-get clean
 
 RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
@@ -16,8 +19,7 @@ RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
 
 COPY ../conf/wp-config.php /var/www/wordpress/
 COPY ../conf/www.conf /etc/php/7.4/fpm/pool.d/
+COPY ../conf/install_wp.sh /usr/local/bin/install_wp.sh
+RUN chmod +x /usr/local/bin/install_wp.sh && chmod 644 /var/www/wordpress/wp-config.php
 
-RUN chmod 644 /var/www/wordpress/wp-config.php
-
-#ENTRYPOINT ["bin/sh", "-c", "while true; do sleep 1000; done"]
-ENTRYPOINT [ "/usr/sbin/php-fpm7.4", "-F" ]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

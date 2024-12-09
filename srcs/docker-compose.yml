@@ -24,6 +24,13 @@ services:
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      # WORDPRESS_URL: http://localhost:8080
+      # ADMIN_USER: admin
+      # ADMIN_PASSWORD: admin_password
+      # ADMIN_EMAIL: admin@example.com
+      # USER_NAME: user
+      # USER_EMAIL: user@example.com
+      # USER_PASSWORD: user_password
       # secrets:
       #   - db_root_password
     volumes:

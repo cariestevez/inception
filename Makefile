@@ -11,10 +11,10 @@ install:
 	@newgrp docker
 
 up:	
-	@docker compose -f $(COMPOSE) up -d
+	@docker-compose -f $(COMPOSE) up -d
 
 down:
-	@docker compose -f $(COMPOSE) down -v
+	@docker-compose -f $(COMPOSE) down -v
 
 prune:
 	@docker system prune -af
