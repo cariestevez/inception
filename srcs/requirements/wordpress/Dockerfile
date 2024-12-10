@@ -12,7 +12,19 @@ RUN apt-get update && apt-get install -y \
     && chmod -R 755 /var/www/wordpress \
     && mkdir -p var/run/php/ && cd var/run/php/ && touch php7.4-fpm.pid
 
-    #&& wp core download --allow-root
+COPY ../conf/www.conf /etc/php/7.4/fpm/pool.d/
+COPY ../tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh 
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+## for manual wp configuration
+# FROM debian:bullseye
+
+# RUN apt-get update && apt-get install -y \
+#     php php7.4-fpm php7.4-mysql \
+#     curl tar \
+#     && apt-get clean
 
 # RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
 #     tar -xvzf wordpress.tar.gz && \
@@ -24,9 +36,8 @@ RUN apt-get update && apt-get install -y \
 #     mkdir -p var/run/php/ && cd var/run/php/ && touch php7.4-fpm.pid
 
 # COPY ../conf/wp-config.php /var/www/wordpress/
-COPY ../conf/www.conf /etc/php/7.4/fpm/pool.d/
-COPY ../conf/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh 
-# && chmod 644 /var/www/wordpress/wp-config.php
+# COPY ../conf/www.conf /etc/php/7.4/fpm/pool.d/
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# RUN chmod 644 /var/www/wordpress/wp-config.php
+
+# ENTRYPOINT [ "/usr/sbin/php-fpm7.4", "-F" ]
