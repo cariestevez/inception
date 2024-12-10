@@ -4,9 +4,9 @@ services:
     container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
       # secrets:
       #   - db_root_password
     volumes:
@@ -20,17 +20,18 @@ services:
     build: ./requirements/wordpress
     container_name: wordpress
     environment:
-      WORDPRESS_DB_HOST: mariadb:3306
-      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
-      WORDPRESS_DB_USER: ${MYSQL_USER}
-      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
-      # WORDPRESS_URL: http://localhost:8080
-      # ADMIN_USER: admin
-      # ADMIN_PASSWORD: admin_password
-      # ADMIN_EMAIL: admin@example.com
-      # USER_NAME: user
-      # USER_EMAIL: user@example.com
-      # USER_PASSWORD: user_password
+      DB_HOST: mariadb:3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      URL: https://localhost #substitute localhost by ${DOMAIN_NAME} when editing hosts! 
+      TITLE: ${TITLE}
+      ADMIN_USER: ${ADMIN_USER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      USER_NAME: ${USER_NAME}
+      USER_EMAIL: ${USER_EMAIL}
+      USER_PASSWORD: ${USER_PASSWORD}
       # secrets:
       #   - db_root_password
     volumes:

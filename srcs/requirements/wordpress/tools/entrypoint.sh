@@ -8,11 +8,11 @@ if [ ! -f /var/www/wordpress/wp-config.php ]; then
   cd /var/www/wordpress
   wp core download --path=/var/www/wordpress
 
-  # Configure wp-config.php with environment variables (already set in wp-config.php)
+  # Generate wp-config.php with environment variables
   wp config create --dbname=${MYSQL_DATABASE} --dbuser=${MYSQL_USER} --dbpass=${MYSQL_PASSWORD} --dbhost=${MYSQL_HOST} --path=/var/www/wordpress
-
+  # wp db create
   # Run WordPress installation
-  wp core install --url=${WORDPRESS_URL} --title="My WordPress Site" --admin_user=${ADMIN_USER} --admin_password=${ADMIN_PASSWORD} --admin_email=${ADMIN_EMAIL} --path=/var/www/wordpress
+  wp core install --url=${URL} --title=${TITLE} --admin_user=${ADMIN_USER} --admin_password=${ADMIN_PASSWORD} --admin_email=${ADMIN_EMAIL} --path=/var/www/wordpress
 
   # Create another user (non-admin)
   wp user create ${USER_NAME} ${USER_EMAIL} --role=subscriber --user_pass=${USER_PASSWORD} --path=/var/www/wordpress
