@@ -7,16 +7,21 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      # secrets:
-      #   - db_root_password
     volumes:
       - data_base:/var/lib/mysql
     networks:
       - netception
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
 
   wordpress:
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     build: ./requirements/wordpress
     container_name: wordpress
     environment:
@@ -24,7 +29,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      URL: https://localhost #substitute localhost by ${DOMAIN_NAME} when editing hosts file! 
+      URL: https://${DOMAIN_NAME}
       TITLE: ${TITLE}
       ADMIN_USER: ${ADMIN_USER}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
@@ -32,17 +37,19 @@ services:
       USER_NAME: ${USER_NAME}
       USER_EMAIL: ${USER_EMAIL}
       USER_PASSWORD: ${USER_PASSWORD}
-      # secrets:
-      #   - db_root_password
     volumes:
       - wordpress_files:/var/www/wordpress
     networks:
       - netception
+
   nginx:
     depends_on:
       - wordpress
     build: ./requirements/nginx
     container_name: nginx
+    environment:
+      TLS_KEY: ${TLS_KEY}
+      TLS_CERT: ${TLS_CERT}
     volumes:
       - wordpress_files:/var/www/wordpress
     ports:
@@ -73,7 +80,3 @@ volumes:
 networks:
   netception:
     driver: bridge
-
-# secrets:
-#   db_root_password:
-#     file: ./db_root_password

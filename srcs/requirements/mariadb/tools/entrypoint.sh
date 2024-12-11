@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# # Initialize the database if it doesn't exist
-# if [ ! -d "/var/lib/mysql/mysql" ]; then
-#     echo "Initializing database..."
-#     mysqld --user=mysql --datadir=/var/lib/mysql --initialize
-#     #mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
-# fi
-
 # Start MariaDB in the background
 # --skip-networking disables TCP connections and restricts communication to the Unix socket (communication between processes in same container only)
 echo "Starting MariaDB server in the background for setup..."

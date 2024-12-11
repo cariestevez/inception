@@ -4,17 +4,24 @@ DATA	= /home/cestevez/data
 
 all:	up
 
-install: 
+install:
+	@echo "Updating package lists and installing Docker..."
 	@sudo apt-get update
-	@sudo apt-get install -y docker.io docker-compose
-	@sudo usermod -aG docker $(USER)
-	@newgrp docker
+	@sudo apt-get install -y docker.io
+	@echo "Setting up Docker Compose v2..."
+	@mkdir -p ~/.docker/cli-plugins/
+	@curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+	@chmod +x ~/.docker/cli-plugins/docker-compose
+	@echo "Verifying Docker and Docker Compose installation..."
+	@docker --version
+	@docker compose version
+	@echo "Installation complete."
 
-up:	
-	@docker-compose -f $(COMPOSE) up -d
+up:
+	@docker compose -f $(COMPOSE) up -d
 
 down:
-	@docker-compose -f $(COMPOSE) down -v
+	@docker compose -f $(COMPOSE) down -v
 
 prune:
 	@docker system prune -af
