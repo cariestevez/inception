@@ -47,9 +47,6 @@ services:
       - wordpress
     build: ./requirements/nginx
     container_name: nginx
-    environment:
-      TLS_KEY: ${TLS_KEY}
-      TLS_CERT: ${TLS_CERT}
     volumes:
       - wordpress_files:/var/www/wordpress
     ports:
