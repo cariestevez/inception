@@ -63,19 +63,13 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      #device: '/Users/carinaestevezorth/Documents/42curriculum/data/wordpress_db'
       device: '/home/cestevez/data/wordpress_db'
   wordpress_files:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      #device: '/Users/carinaestevezorth/Documents/42curriculum/data/wordpress_data'
       device: '/home/cestevez/data/wordpress_files'
-
-# volumes:
-#   data_base:
-#   wordpress_data:
 
 networks:
   netception:

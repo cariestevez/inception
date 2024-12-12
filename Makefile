@@ -1,6 +1,5 @@
 COMPOSE	= ./srcs/docker-compose.yml
 DATA	= /home/cestevez/data
-#DATA	= /Users/carinaestevezorth/Documents/42curriculum/data
 
 all:	up
 
